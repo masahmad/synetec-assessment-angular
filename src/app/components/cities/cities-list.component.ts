@@ -1,17 +1,36 @@
 import { Component, OnInit } from "@angular/core";
 import { ICity } from "../../models/city.model";
+import { CitiesService } from "../../services/cities/cities.service";
 
-@Component ({
-    selector: 'cities-list',
-    templateUrl: './cities-list.component.html',
-    styleUrls: ['./cities-list.component.css']
+@Component({
+  selector: "cities-list",
+  templateUrl: "./cities-list.component.html",
+  styleUrls: ["./cities-list.component.css"]
 })
+export class CitiesListComponent implements OnInit {
+  cities: ICity[];
 
-export class CitiesListComponent implements OnInit{
+  constructor(private _citiesService: CitiesService) { }
 
-    cities: ICity[];
-    constructor() {}
+  ngOnInit(): void {
+    this.fetchData();
 
-    ngOnInit(): void {
-    }
+  }
+
+
+  fetchData() {
+    this._citiesService.fetchCities()
+      .subscribe(data => {
+        this.cities = data;
+      });
+  }
+
+
+  deleteClick(id: number) {
+    this._citiesService.removeCity(id)
+      .subscribe(() => {
+        this.fetchData(); // refresh list after delete
+      });
+
+  }
 }
